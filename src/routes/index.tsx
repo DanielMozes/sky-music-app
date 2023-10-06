@@ -1,17 +1,15 @@
-import Counter from "~/components/Counter";
 import "./index.css";
 
 export default function Home() {
   return (
     <main>
-      <h1>Hello world!</h1>
-      <Counter />
+      <h1>Welcome to SkyMusic! (Coming Soon)</h1>
       <p>
         Visit{" "}
-        <a href="https://start.solidjs.com" target="_blank">
-          start.solidjs.com
+        <a href="https://sky-music-site.vercel.app/">
+          our website
         </a>{" "}
-        to learn how to build Solid apps.
+        to join beta watlist.
       </p>
     </main>
   );
