@@ -3,7 +3,7 @@ import "./index.css";
 export default function Home() {
   return (
     <main>
-      <h1>Welcome to SkyMusic! (Coming Soon)</h1>
+      <h1>Welcome to SkyMusic!</h1>
       <p>
         Visit{" "}
         <a href="https://sky-music-site.vercel.app/">
