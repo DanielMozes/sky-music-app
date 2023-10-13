@@ -6,7 +6,7 @@ export default function Home() {
       <h1>Welcome to SkyMusic!</h1>
       <p>
         Visit{" "}
-        <a href="https://sky-music-site.vercel.app/">
+        <a href="https://skymusic-site.vercel.app/">
           our website
         </a>{" "}
         to join beta watlist.
