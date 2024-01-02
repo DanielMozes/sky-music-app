@@ -14,8 +14,12 @@
   "dependencies": {
     "@solidjs/meta": "^0.28.5",
     "@solidjs/router": "^0.8.2",
-    "solid-js": "^1.7.5",
-    "solid-start": "^0.2.26",
+    "bootstrap-icons": "^1.11.2",
+    "solid-bootstrap": "^1.0.19",
+    "solid-icons": "^1.1.0",
+    "solid-js": "^1.8.7",
+    "solid-start": "^0.2.32",
+    "swipyjs": "0.0.6",
     "undici": "^5.22.1"
   },
   "engines": {

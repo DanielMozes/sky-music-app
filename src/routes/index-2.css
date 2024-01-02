@@ -183,10 +183,6 @@ body {
     background: url('/button.jpg') no-repeat;
 }
 
-.card .card-body{
-    background: url('/dark.jpg') no-repeat;
-}
-
 .image-overlay {
     opacity: 0;
     position: absolute;
@@ -237,48 +233,6 @@ body {
 
 #musicPlayer.card .card-body {
     background: url(/button.jpg) no-repeat;
-}
-
-.border {
-    border: 2px solid #000 !important;
-}
-
-input, select, textarea{
-    color: #fff;
-}
-
-textarea:focus, input:focus {
-    color: #fff;
-}
-
-input[type="search"]::placeholder {
-    color: #fff;
-  }
-
-.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
-    --bs-gutter-x: 1rem;
-}
-
-.grid-template-1-4 {
-    grid-template-columns: 1fr 4fr;
-}
-
-@media (max-width: 575.98px) { 
-    .grid-template-1-4 {
-        grid-template-columns: 1fr;
-    }
-
-    #search, #dots {
-        visibility: hidden;
-    }
-
-    .container-fluid {
-        --bs-gutter-x: 0;
-    }
-
-    .bg-body-tertiary.border.rounded-3.py-2.px-3 {
-        border-radius: 0 !important;
-    }
 }
 
 /* Style Pop */ 

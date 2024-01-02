@@ -3,7 +3,7 @@ import "./index.css";
 import Header from "./components/Header";
 import LayoutChangerButtons from "./components/LayoutChangerButtons";
 import LeftSection from "./components/LeftSection";
-import RightSection from "./components/RightSection";
+import RightSection from "./components/RightSectionRegister";
 import Footer from "./components/Footer";
 
 export default function Home() {
