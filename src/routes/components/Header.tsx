@@ -1,3 +1,5 @@
+import LayoutChangerButtons from "./LayoutChangerButtons";
+
 function Header() {
     return (
 <header class="p-2 bg-dark fixed-top" style="border-bottom: 2px solid #000!important;">
@@ -17,6 +19,7 @@ function Header() {
           <a href="/login/" class="btn btn-outline-primary me-2" role="button">Login</a>
           <a href="/register/" class="btn btn-primary" role="button">Register</a>
         </div>
+        <LayoutChangerButtons />
       </div>
     </div>
 </header>

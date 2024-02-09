@@ -4,4 +4,12 @@ SkyMusic is a decentralized music streaming application that operates completely
 
 ## Version
 
-0.1.0
+0.2.0
+
+## Quick start
+
+1. Create .env file from example.env
+2. Configure the .env file
+
+## License
+MIT License

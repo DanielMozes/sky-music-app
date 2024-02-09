@@ -1,9 +1,8 @@
 import "./index.css";
 
 import Header from "./components/Header";
-import LayoutChangerButtons from "./components/LayoutChangerButtons";
 import LeftSection from "./components/LeftSection";
-import RightSection from "./components/RightSectionPlaylist";
+import RightSection from "./components/RSPlaylist";
 import Footer from "./components/Footer";
 
 export default function Home() {
@@ -19,7 +18,6 @@ export default function Home() {
   </div>
 
   <Footer />
-  <LayoutChangerButtons />
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </>

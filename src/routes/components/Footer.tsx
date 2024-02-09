@@ -17,7 +17,7 @@ function Footer() {
         <span style="padding-left: 5px;">SkyMusic</span>
       </a>
 
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center donate">
         <div class="flex-shrink-0 dropdown w-100 me-3">
           <a href="/donate/" class="btn btn-primary me-2 btn-sm w-100" role="button"><BiSolidDonateHeart /> Donate</a>
         </div>
@@ -25,7 +25,8 @@ function Footer() {
 
       <div class="d-flex align-items-center flex-row-reverse">
         <div class="flex-shrink-0 dropdown">
-          <button type="button" class="btn btn-outline-primary me-2 btn-sm"  onclick={() => changeBackground()}>Change background</button>
+          <button type="button" class="btn btn-outline-primary me-2 btn-sm d-none d-sm-block"  onclick={() => changeBackground()}>Change background</button>
+          <a href="/donate/" class="btn btn-primary me-2 btn-sm w-100 d-block d-sm-none" role="button"><BiSolidDonateHeart /> Donate</a>
         </div>
       </div>
     </div>

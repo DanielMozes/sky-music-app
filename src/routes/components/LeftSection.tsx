@@ -1,15 +1,173 @@
+import { createSignal, createEffect } from "solid-js";
+import { makeAudio } from "@solid-primitives/audio";
+import { createEventListener } from "@solid-primitives/event-listener";
+
+import { IoPlayCircle } from 'solid-icons/io'
+import { IoPauseCircle } from 'solid-icons/io'
+import { IoPlaySkipBackCircle } from 'solid-icons/io'
+import { IoPlaySkipForwardCircle } from 'solid-icons/io'
+import { IoLogoSoundcloud } from 'solid-icons/io'
+import { RiBusinessCreativeCommonsFill } from 'solid-icons/ri'
+
+import { Match, Switch } from 'solid-js'
+import { getDatabase, ref } from 'firebase/database'
+import { useDatabase, useFirebaseApp } from 'solid-firebase'
+
 function LeftSection() {
+  if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    const sw = navigator.serviceWorker;
+
+    if (!sw) {
+      alert('Service Worker API not supported');
+    } else {
+      if (!sw.controller) {
+        try {
+          sw.register('/sw.js').then(function (registration) {
+            console.log('Registration succeeded.', registration);
+          });
+        } catch (e) {
+          alert(e);
+        }
+      }
+    }
+  }
+
+  const app = useFirebaseApp()
+  const db = getDatabase(app)
+  const musics = useDatabase(ref(db))
+  let index = 0;
+  let quality = 320;
+
+  const getAudioSrc = typeof window !== 'undefined' ? localStorage.getItem('audioSrc') : null;
+
+  const getIndex = typeof window !== 'undefined' ? localStorage.getItem('index') : null;
+
+  const getQuality = typeof window !== 'undefined' ? localStorage.getItem('index') : null;
+
+  const cid = import.meta.env.VITE_CID;
+
+  const [audioSrc, setAudioSrc] = createSignal(
+    getAudioSrc || "/s5/blob/" + cid + "?mediaType=audio%2Fogg"
+  );
+
+  const changeAudioSrc = (newSrc, newIndex, newQuality) => {
+    setAudioSrc(newSrc);
+    localStorage.setItem("audioSrc", newSrc);
+    localStorage.setItem("index", newIndex);
+    localStorage.setItem("quality", newQuality);
+    location.reload();
+  };
+
+  let audio = makeAudio(audioSrc());
+
+  createEffect(() => {
+    const savedAudioSrc = localStorage.getItem("audioSrc");
+  
+    if (savedAudioSrc && savedAudioSrc !== audioSrc()) {
+      setAudioSrc(savedAudioSrc);
+      audio = makeAudio(savedAudioSrc);
+    }
+  });
+
+  const [isPlaying, setIsPlaying] = createSignal(false);
+  const [currentTime, setCurrentTime] = createSignal(0);
+  const [duration, setDuration] = createSignal(0);
+
+  const updateCurrentTime = () => {
+    setCurrentTime(audio.currentTime);
+  };
+
+  const updateDuration = () => {
+    setDuration(audio.duration);
+  };
+
+  const playPauseToggle = () => {
+    if (isPlaying()) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setIsPlaying(!isPlaying());
+  };
+
+  const handleSeek = (e) => {
+    const seekTime = parseInt(e.target.value);
+    audio.currentTime = seekTime;
+    setCurrentTime(seekTime);
+  };
+
+  createEventListener(
+    audio,
+    "timeupdate",
+    updateCurrentTime
+  );
+
+  createEventListener(
+    audio,
+    "durationchange",
+    updateDuration
+  );
+
+  const formatTime = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+  
+    const formattedHours = hours > 0 ? `${hours}:` : '';
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+  
+    return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
+  };
+
     return (
-<div id="leftSection" class="bg-body-tertiary border rounded-3 py-2 px-3" style="background-color: #212529 !important;">
-  <div id="musicPlayer" class="card my-2">
-    <img src="/music-player.png" class="card-img-top" width="100%" height="100%" style="padding: 15px;" />
+<div id="leftSection" class="bg-body-tertiary border rounded-3 d-none d-sm-block">
+  <div id="musicPlayer" class="card" style="min-height: 100%;">
+    <img src="/music-4.jpg" class="card-img-top" width="100%" height="230" />
     <div class="image-overlay">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="#1ed660" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5"/>
-      </svg>
+      {isPlaying() ? <IoPauseCircle onClick={playPauseToggle} /> : <IoPlayCircle onClick={playPauseToggle} />}
     </div>
-    <div class="card-body text-white">
-      <h6>Test - This is a text</h6>
+    <Switch>
+      <Match when={musics.loading}>
+        <p>Loading...</p>
+      </Match>
+      <Match when={musics.error}>
+        <p>An error occurred.</p>
+      </Match>
+      <Match when={musics.data}>
+        <div class="text-white p-2">
+          <h6>{musics.data[index].title}</h6>
+          <p class="mb-1">{musics.data[index].artist}</p>
+          <div class="row mb-5">
+            <div class="col">
+              <span class="badge text-bg-primary w-100">{musics.data[index].genre.slice(0, 7)}</span>
+            </div>
+            <div class="col p-0">
+              <span class="badge text-bg-primary w-100">{musics.data[index].type.slice(0, 7)}</span>
+            </div>
+            <div class="col">
+              <span class="badge text-bg-primary w-100">{musics.data[index].mood.slice(0, 7)}</span>
+            </div>
+          </div>
+          <p class="mb-1"><small>"{musics.data[index].title}" by {musics.data[index].artist} is licensed under a <RiBusinessCreativeCommonsFill /> license.</small></p>
+          <p><a href={musics.data[index].artist_page}><span class="badge text-bg-secondary soundcloud w-100">Artist page on <IoLogoSoundcloud /></span></a></p>
+        </div>
+      </Match>
+    </Switch>
+    <div class="text-white text-center w-100 pb-3 musicPlayerDashboard">
+      <input
+        class="w-100"
+        type="range"
+        min="0"
+        max={duration()}
+        value={currentTime()}
+        onInput={handleSeek}
+      />
+      <div style="float: left; margin-left:10px;">{formatTime(Math.round(currentTime()))}</div>
+      <div style="float: right; margin-right:10px">{formatTime(Math.round(duration()))}</div>
+      <IoPlaySkipBackCircle />
+      {isPlaying() ? <IoPauseCircle onClick={playPauseToggle} /> : <IoPlayCircle onClick={playPauseToggle} />}
+      <IoPlaySkipForwardCircle />
     </div>
   </div>
   <div class="dropdown d-none">

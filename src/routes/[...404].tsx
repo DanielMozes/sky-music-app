@@ -2,7 +2,7 @@ import "./index.css";
 
 import Header from "./components/Header";
 import LeftSection from "./components/LeftSection";
-import RightSection from "./components/RSMusic";
+import RightSection from "./components/RS404";
 import Footer from "./components/Footer";
 
 export default function Home() {
