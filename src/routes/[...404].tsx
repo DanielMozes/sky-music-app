@@ -11,7 +11,7 @@ export default function Home() {
   <Header />
 
   <div class="container-fluid pb-2" style="background: url(/background.jpg); background-size: cover;">
-    <div class="d-grid gap-2 grid-template-1-4" style="padding-top: 65px; min-height: 99vh;">
+    <div class="d-grid gap-2" style="padding-top: 65px; min-height: 99vh;">
       <LeftSection />
       <RightSection />
     </div>

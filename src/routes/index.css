@@ -410,6 +410,10 @@ input[type="range"]::-webkit-slider-runnable-track {
     border-color: #1ed660;
 }
 
+.dropdown-item.active, .dropdown-item:active {
+    background-color: #1ed660;
+}
+
 @media (max-width: 575.98px) { 
     .grid-template-1-4 {
         grid-template-columns: 1fr;
@@ -445,7 +449,11 @@ input[type="range"]::-webkit-slider-runnable-track {
     }
 
     #leftSection {
-        max-width: 100vw;
+        min-width: 100vw;
+    }
+
+    #rightSection {
+        margin-left: 0px !important;
     }
 }
 

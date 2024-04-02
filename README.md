@@ -4,7 +4,7 @@ SkyMusic is a decentralized music streaming application that operates completely
 
 ## Version
 
-0.2.0
+0.3.0
 
 ## Quick start
 

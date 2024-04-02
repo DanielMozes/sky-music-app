@@ -1,8 +1,23 @@
 import RandomBackgroundDots from "./RandomBackgroundDots";
 
 function RightSection() {
+  const initialQuality = () => {
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('quality') || '160';
+    }
+    return '160';
+  };
+
+  const changeQuality = (newQuality) => {
+    localStorage.setItem("quality", newQuality);
+    window.dispatchEvent(new Event("storage"));
+  };
+
+  const handleQualityChange = (event) => {
+    changeQuality(event.target.value);
+  };
     return (
-<div id="rightSection" class="bg-body-tertiary border rounded-3" style="background-color: #212529 !important;">
+<div id="rightSection" class="bg-body-tertiary border rounded-3" style="background-color: #212529 !important; margin-left: calc(20% + 0.4rem);">
   <div class="px-4 py-5 my-5 text-center">
     <RandomBackgroundDots />
     <h1 class="display-5 fw-bold text-white">Settings</h1>
@@ -10,7 +25,7 @@ function RightSection() {
       <p class="lead mb-4 text-white">Quality</p>
       <div class="list-group list-group-radio d-grid gap-2 border-0">
         <div class="position-relative">
-          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid320" value="" checked />
+          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid320" value="320" onInput={handleQualityChange} checked={initialQuality() === '320'}/>
           <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid320">
             <strong class="fw-semibold">Extra high (320 kbps)</strong>
             <span class="d-block small opacity-75">The highest possible quality is with us; it is worth using only if the High setting is not to your liking</span>
@@ -18,7 +33,7 @@ function RightSection() {
         </div>
 
         <div class="position-relative">
-          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid160" value="" />
+          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid160" value="160" onInput={handleQualityChange} checked={initialQuality() === '160'} />
           <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid160">
             <strong class="fw-semibold">High (160 kbps) - Recommended</strong>
             <span class="d-block small opacity-75">Transparent sound, this is the recommended setting for most users</span>
@@ -26,7 +41,7 @@ function RightSection() {
         </div>
 
         <div class="position-relative">
-          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid80" value="" />
+          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid80" value="80" onInput={handleQualityChange} checked={initialQuality() === '80'} />
           <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid80">
             <strong class="fw-semibold">Normal (80 kbps)</strong>
             <span class="d-block small opacity-75">Balanced quality with less data usage</span>
@@ -34,7 +49,7 @@ function RightSection() {
         </div>
 
         <div class="position-relative">
-          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid40" value="" />
+          <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGridQuality" id="listGroupRadioGrid40" value="40" onInput={handleQualityChange} checked={initialQuality() === '40'} />
           <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid40">
             <strong class="fw-semibold">Low (40 kbps)</strong>
             <span class="d-block small opacity-75">Low quality with the minimum possible data usage</span>

@@ -9,7 +9,8 @@ import { getDatabase, ref, push } from "firebase/database";
 function RightSection() {
   const authenticated = BasicAuth();
 
-  const [files, setFiles] = createSignal([null, null, null, null]);
+  const [files, setFiles] = createSignal(null);
+  const [isUploading, setIsUploading] = createSignal(false);
   
   let artistPageInput;
   let genreInput;
@@ -17,13 +18,11 @@ function RightSection() {
   let moodInput;
   let licenseInput;
 
-  const handleFileChange = (event, index) => {
-    const selectedFile = event.target.files[0];
-    setFiles((prevFiles) => {
-      const newFiles = [...prevFiles];
-      newFiles[index] = selectedFile;
-      return newFiles;
-    });
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFiles(file);
+    }
   };
 
   const handleArtistPageChange = (event) => {
@@ -46,67 +45,88 @@ function RightSection() {
     licenseInput = event.target.value;
   };
 
-  const areAllFilesSelected = () => {
-    return files().every((file) => file !== null);
-  };
-
   const music_data = [];
-  let currentFilename;
+
+  const [filesData, setFilesData] = createSignal([]);
 
   const handleUpload = async () => {
-    if (areAllFilesSelected()) {
-      for (let index = 0; index < files().length; index++) {
-        const currentFile = files()[index];
+    setIsUploading(true);
+    // Converting
+    try {
+      const formData = new FormData();
+      formData.append('music', files());
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/convert', formData, {
+        headers: {
+          'Authorization': 'Bearer ' + import.meta.env.VITE_S5_AUTH_TOKEN,
+        },
+      });
 
-        if (currentFile !== null) {
-          currentFilename = currentFile.name;
-          const formData = new FormData();
-          formData.append('file', currentFile);
+      console.log(`Convert response:`, response.data);
 
-          try {
-            const response = await axios.post(import.meta.env.VITE_S5_URL + '/upload?auth_token=' + import.meta.env.VITE_S5_AUTH_TOKEN, formData, {
-              headers: {
-                'Content-Type': 'audio/ogg',
-              },
-            });
+      // Uploading
+      const nameWithoutExtension = files().name.replace(/\.[^/.]+$/, "");
+      const urls = [
+        nameWithoutExtension + '-320.opus',
+        nameWithoutExtension + '-160.opus',
+        nameWithoutExtension + '-80.opus',
+        nameWithoutExtension + '-40.opus'
+      ];
+      try {
+        for (let index = 0; index < urls.length; index++) {
+          const fileName = urls[index];
+          console.log("fileName: " + fileName);
 
-            console.log(`cURL response for file${index + 1}:`, response.data["cid"]);
-            music_data.push(response.data["cid"]);
-          } catch (error) {
-            console.error(`Error for file${index + 1}:`, error);
+          if (fileName !== null) {
+            try {
+              const response = await axios.post(import.meta.env.VITE_API_URL + '/upload?auth_token=' + import.meta.env.VITE_S5_AUTH_TOKEN, { fileName }, {
+                headers: {
+                  'Authorization': 'Bearer ' + import.meta.env.VITE_S5_AUTH_TOKEN,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              console.log(`cURL response for file${index + 1}:`, response.data["cid"]);
+              music_data[index] = response.data["cid"];
+            } catch (error) {
+              console.error(`Error for file${index + 1}:`, error);
+            }
           }
         }
+
+        // Add to database
+        const separator = " - ";
+        const parts = nameWithoutExtension.split(separator);
+        const artist = parts[0];
+        const title = parts[1];
+
+        const db = getDatabase();
+
+        const postData = {
+          40: music_data[3], 
+          80: music_data[2], 
+          160: music_data[1], 
+          320: music_data[0], 
+          artist: artist, 
+          title: title, 
+          artist_page: artistPageInput, 
+          genre: genreInput, 
+          type: typeInput, 
+          mood: moodInput, 
+          license: licenseInput
+        };
+
+        push(ref(db, 'uploads'), postData);
+      } catch (error) {
+        console.error("Error downloading files:", error);
       }
 
-      const separator = " - ";
-      const parts = currentFilename.split(separator);
-      const artist = parts[0];
-      const parts1 = parts[1];
-      const title = parts1.split('-')[0];
-
-      const db = getDatabase();
-
-      const postData = {
-        40: music_data[3], 
-        80: music_data[2], 
-        160: music_data[1], 
-        320: music_data[0], 
-        artist: artist, 
-        title: title, 
-        artist_page: artistPageInput, 
-        genre: genreInput, 
-        type: typeInput, 
-        mood: moodInput, 
-        license: licenseInput
-      };
-  
-      push(ref(db), postData);
-    } else {
-      console.warn('Not all files selected.');
+    } catch (error) {
+      console.error(`Error for convert:`, error);
     }
+    setIsUploading(false);
   };
     return (
-    <div id="rightSection" class="bg-body-tertiary border rounded-3" style="background-color: #212529 !important;">
+    <div id="rightSection" class="bg-body-tertiary border rounded-3" style="background-color: #212529 !important; margin-left: calc(20% + 0.4rem);">
       <div class="px-4 py-5 my-5 text-center">
         <RandomBackgroundDots />
         <h1 class="display-5 fw-bold text-white">Admin</h1>
@@ -116,25 +136,19 @@ function RightSection() {
                 <label class="form-label text-white">Upload files to encode</label>
                 <br />
                 <label for="artist_page" class="form-label text-white">Artist page</label>
-                <input type="text" class="form-control" id="artist_page" onInput={handleArtistPageChange} />
+                <input type="text" class="form-control" id="artist_page" onInput={handleArtistPageChange} disabled={isUploading()} />
                 <label for="genre" class="form-label text-white">Genre</label>
-                <input type="text" class="form-control" id="genre" onInput={handleGenreChange} />
+                <input type="text" class="form-control" id="genre" onInput={handleGenreChange} disabled={isUploading()} />
                 <label for="type" class="form-label text-white">Type</label>
-                <input type="text" class="form-control" id="type" onInput={handleTypeChange} />
+                <input type="text" class="form-control" id="type" onInput={handleTypeChange} disabled={isUploading()} />
                 <label for="mood" class="form-label text-white">Mood</label>
-                <input type="text" class="form-control" id="mood" onInput={handleMoodChange} />
+                <input type="text" class="form-control" id="mood" onInput={handleMoodChange} disabled={isUploading()} />
                 <label for="license" class="form-label text-white">License</label>
-                <input type="text" class="form-control" id="license" onInput={handleLicenseChange} />
-                <label for="file320" class="form-label text-white">320</label>
-                <input class="form-control" type="file" id="file320" onChange={(e) => handleFileChange(e, 0)} />
-                <label for="file160" class="form-label text-white">160</label>
-                <input class="form-control" type="file" id="file160" onChange={(e) => handleFileChange(e, 1)} />
-                <label for="file80" class="form-label text-white">80</label>
-                <input class="form-control" type="file" id="file80" onChange={(e) => handleFileChange(e, 2)} />
-                <label for="file40" class="form-label text-white">40</label>
-                <input class="form-control" type="file" id="file40" onChange={(e) => handleFileChange(e, 3)} />
+                <input type="text" class="form-control" id="license" onInput={handleLicenseChange} disabled={isUploading()} />
+                <label for="file" class="form-label text-white">File</label>
+                <input class="form-control" type="file" id="file" onChange={handleFileChange} disabled={isUploading()} />
                 <br />
-                <button type="submit" class="btn btn-primary" onClick={handleUpload}>Encode file</button>
+                <button type="submit" class="btn btn-primary" onClick={handleUpload} disabled={isUploading()}>Encode file</button>
               </div>
           ) : (
             <p class="lead mb-4 text-white">Password required</p>
