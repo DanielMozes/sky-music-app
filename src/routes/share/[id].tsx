@@ -1,16 +1,16 @@
-import "./index.css";
+import "../index.css";
 
-import MySiteTitle from "./components/MySiteTitle";
+import MySiteTitle from "./../components/MySiteTitle";
 
-import Header from "./components/Header";
-import LeftSection from "./components/LeftSection";
-import RightSection from "./components/RSSettings";
-import Footer from "./components/Footer";
+import Header from "../components/Header";
+import LeftSection from "../components/LeftSection";
+import RightSection from "../components/RSShare";
+import Footer from "../components/Footer";
 
 export default function Home() {
 	return (
 		<>
-			<MySiteTitle>Settings</MySiteTitle>
+			<MySiteTitle>Share</MySiteTitle>
 
 			<Header />
 

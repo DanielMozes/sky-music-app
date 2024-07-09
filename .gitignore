@@ -22,3 +22,4 @@ gitignore
 Thumbs.db
 
 .env
+.vercel

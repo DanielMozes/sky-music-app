@@ -4,13 +4,13 @@ import MySiteTitle from "./components/MySiteTitle";
 
 import Header from "./components/Header";
 import LeftSection from "./components/LeftSection";
-import RightSection from "./components/RSSettings";
+import RightSection from "./components/RSRegister";
 import Footer from "./components/Footer";
 
 export default function Home() {
 	return (
 		<>
-			<MySiteTitle>Settings</MySiteTitle>
+			<MySiteTitle>Join</MySiteTitle>
 
 			<Header />
 
